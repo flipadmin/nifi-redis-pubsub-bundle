@@ -33,6 +33,7 @@ public abstract class AbstractRedisProcessor  extends AbstractSessionFactoryProc
     protected volatile RedisConnectionPool redisConnectionPool;
     protected volatile String mode;
     protected volatile String channelOrKey;
+    protected volatile Long ttl;
     private List<PropertyDescriptor> descriptors;
 
     protected abstract PropertyDescriptor getQueueModePropertyDescriptor();

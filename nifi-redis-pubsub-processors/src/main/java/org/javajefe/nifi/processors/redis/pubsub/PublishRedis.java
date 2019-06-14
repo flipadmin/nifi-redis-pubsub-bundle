@@ -48,12 +48,22 @@ public class PublishRedis extends AbstractRedisProcessor {
             .build();
 
     public static final PropertyDescriptor CHANNEL_OR_LIST = new PropertyDescriptor.Builder()
-            .name("Channel/Key Name")
-            .description("Channel name (for PUBLISH mode) or Key name the list is stored (for LPUSH and RPUSH modes)")
-            .required(true)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+        .name("Channel/Key Name")
+        .description("Channel name (for PUBLISH mode) or Key name the list is stored (for LPUSH and RPUSH modes)")
+        .required(true)
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+        .build();
+
+
+    public static final PropertyDescriptor TTL = new PropertyDescriptor.Builder()
+        .name("Key TTL")
+        .description("xPush TTL value")
+        .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
+        .defaultValue("0")
+        .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+        .required(false)
+        .build();
 
     public void onTrigger(ProcessContext context, ProcessSession session) throws ProcessException, IOException {
 
@@ -109,12 +119,15 @@ public class PublishRedis extends AbstractRedisProcessor {
                             throw new IllegalStateException("PUBLISH command accepts only one value");
                         }
                         redisConnection.publish(channelOrKeyBytes, flowFilesContent[0]);
+                        redisConnection.expire(channelOrKeyBytes, ttl);
                         break;
                     case "LPUSH":
                         redisConnection.listCommands().lPush(channelOrKeyBytes, flowFilesContent);
+                        redisConnection.expire(channelOrKeyBytes, ttl);
                         break;
                     case "RPUSH":
                         redisConnection.listCommands().rPush(channelOrKeyBytes, flowFilesContent);
+                        redisConnection.expire(channelOrKeyBytes, ttl);
                         break;
                     default:
                         throw new UnsupportedOperationException("Queue mode " + mode + " is not supported");
@@ -143,6 +156,7 @@ public class PublishRedis extends AbstractRedisProcessor {
                 .asControllerService(RedisConnectionPool.class);
         mode = context.getProperty(QUEUE_MODE).getValue();
         channelOrKey = context.getProperty(CHANNEL_OR_LIST).evaluateAttributeExpressions().getValue();
+        ttl = Long.valueOf(context.getProperty(TTL).evaluateAttributeExpressions().getValue());
     }
 
     @Override
