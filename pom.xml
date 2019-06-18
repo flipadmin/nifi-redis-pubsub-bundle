@@ -10,7 +10,7 @@
 
     <groupId>org.javajefe.nifi</groupId>
     <artifactId>nifi-redis-pubsub-bundle</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <packaging>pom</packaging>
 
     <modules>
