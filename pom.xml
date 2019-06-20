@@ -10,12 +10,60 @@
 
     <groupId>org.javajefe.nifi</groupId>
     <artifactId>nifi-redis-pubsub-bundle</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <properties>
+        <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
+        <nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
+        <nexus.url>https://indus-srv01.flipsports.net/</nexus.url>
+    </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>${nexus.url}repository/maven-snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>releases</id>
+            <url>${nexus.url}repository/maven-releases</url>
+        </repository>
+    </distributionManagement>
 
     <modules>
         <module>nifi-redis-pubsub-processors</module>
         <module>nifi-redis-pubsub-nar</module>
     </modules>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <serverId>nexus</serverId>
+                    <nexusUrl>${nexus.url}</nexusUrl>
+                    <skipStaging>true</skipStaging>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
