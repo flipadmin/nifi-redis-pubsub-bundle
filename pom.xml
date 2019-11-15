@@ -16,7 +16,7 @@
     <properties>
         <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
         <nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
-        <nexus.url>https://indus-srv01.flipsports.net/</nexus.url>
+        <nexus.url>https://lena-srv01.flipsports.net:4566/</nexus.url>
     </properties>
 
     <distributionManagement>
